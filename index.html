@@ -367,6 +367,28 @@
       color: #9a3412;
     }
 
+    /* 🔥 最后10秒警告效果 */
+.timer-box.warning {
+  animation: dangerPulse 1s infinite;
+  border-color: #ff0000;
+}
+
+@keyframes dangerPulse {
+  0% {
+    background: #fff1e8;
+    box-shadow: 0 0 0px rgba(255, 0, 0, 0);
+  }
+  50% {
+    background: #ff4d4f;
+    color: white;
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
+  }
+  100% {
+    background: #fff1e8;
+    box-shadow: 0 0 0px rgba(255, 0, 0, 0);
+  }
+}
+
     .timer-box.done {
       background: #f1fff3;
       border: 1px solid #b7efc0;
@@ -543,6 +565,9 @@
 
   <script>
 
+    const doneSound = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+    doneSound.volume = 0.7;
+
     const API_URL = "https://script.google.com/macros/s/AKfycbzl9COfgZxa0DoTKkoaeFrkIZ5cYmBHvEIrKBBupFt8kpmKNz3s5klFDOPYJnNIWKAzRA/exec";
 
     let currentOrder = [];
@@ -560,6 +585,8 @@
 
     function setStatus(text, isError = false) {
       const el = document.getElementById('statusText');
+      if (!el) return; // ⭐ 防 crash
+
       el.textContent = text;
       el.style.color = isError ? '#b42318' : '#067647';
     }
@@ -915,6 +942,13 @@ return `
     }
 
     async function startTimer(orderNumber, slotIndex, label, seconds, type) {
+
+      // 🔓 解锁音频（用户点击时触发）
+      doneSound.play().then(() => {
+      doneSound.pause();
+      doneSound.currentTime = 0;
+      }).catch(()=>{});
+
       const state = kitchenState[orderNumber];
       if (!state) return;
 
@@ -967,15 +1001,30 @@ return `
         timer.remaining -= 1;
         const el = document.getElementById(timerId);
 
+        // 🔥 最后10秒 → 加警告效果
+        if (timer.remaining <= 10 && timer.remaining > 0) {
+        if (el) el.classList.add('warning');
+        } else {
+        if (el) el.classList.remove('warning');
+        }
+
         if (timer.remaining <= 0) {
           clearInterval(timer.interval);
           timer.remaining = 0;
           timer.done = true;
           slot.done = true;
+
+          // 🔊 只响一次
+          try {
+          doneSound.currentTime = 0;
+          doneSound.play();
+          } catch(e) {}
           if (el) {
             el.textContent = `${label} #${slotIndex + 1} 可以起锅`;
             el.classList.add('done');
           }
+
+          if (el) el.classList.remove('warning');
 
           if (isOrderReady(orderNumber)) {
             const foundOrder = (orderData.orders || []).find(o => o.orderNumber === orderNumber);
