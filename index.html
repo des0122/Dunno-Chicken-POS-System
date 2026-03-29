@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>鸡道订单系统</title>
+  <title>Dunno Karagee POS</title>
   <link rel="icon" type="image/png" href="apple-touch-icon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="鸡道订单系统">
+  <meta name="apple-mobile-web-app-title" content="DC POS">
   <meta name="theme-color" content="#d60000">
   <style>
     :root {
@@ -467,30 +467,30 @@
           <img src="apple-touch-icon.png" alt="鸡道 Logo">
         </div>
         <div>
-          <h1 class="brand-title">鸡道订单系统</h1>
-          <div class="brand-subtitle">小鸡出手，订单要稳 · 下单 / 厨房 / 报表</div>
+          <h1 class="brand-title">DC POS</h1>
+          <div class="brand-subtitle">Fast. Efficient. Delicious.</div>
           <div class="brand-divider"></div>
         </div>
       </div>
       <div class="brand-meta">
-        <div class="brand-pill">🍗 鸡排 2 分钟</div>
-        <div class="brand-pill">🍟 薯条 4 分钟</div>
-        <div class="brand-pill">📱 可加到主画面</div>
+        <div class="brand-pill">🍗 Karagee 2 min</div>
+        <div class="brand-pill">🍟 Fries 4 min</div>
+        <div class="brand-pill">📱 Add to Homescreen</div>
       </div>
     </div>
 
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="showTab('orderTab', this)">🧾 下单</button>
-      <button class="tab-btn" onclick="showTab('kitchenTab', this)">🍗 厨房</button>
-      <button class="tab-btn" onclick="showTab('reportTab', this)">📊 报表</button>
+      <button class="tab-btn active" onclick="showTab('orderTab', this)">🧾 Order</button>
+      <button class="tab-btn" onclick="showTab('kitchenTab', this)">🍗 Kitchen</button>
+      <button class="tab-btn" onclick="showTab('reportTab', this)">📊 Report</button>
     </div>
 
     <div id="orderTab" class="tab active">
       <div class="card">
-        <span class="section-kicker">建立新单</span>
+        <span class="section-kicker">New Order</span>
         <div class="card-title-row">
-          <h2>选产品</h2>
+          <h2>Select Items</h2>
         </div>
         <div class="grid">
           <button class="product-btn" onclick="addItem('Combo', 11)">🍗🍟 Combo<span>RM 11.00</span></button>
@@ -502,9 +502,9 @@
       </div>
 
       <div class="card">
-        <span class="section-kicker">本单内容</span>
+        <span class="section-kicker">This Order</span>
         <div class="card-title-row">
-          <h2>当前订单</h2>
+          <h2>Order</h2>
         </div>
         <div id="currentOrderList"></div>
         <div class="summary-boxes" style="margin-top:14px;">
@@ -513,29 +513,29 @@
             <div class="summary-value" id="currentOrderNumber">-</div>
           </div>
           <div class="summary-box">
-            <div class="summary-label">总额</div>
+            <div class="summary-label">Total</div>
             <div class="summary-value" id="currentTotal">RM 0.00</div>
           </div>
           <div class="summary-box">
-            <div class="summary-label">付款方式</div>
-            <div class="summary-value" style="font-size:18px;">QR 已付</div>
+            <div class="summary-label">Payment Type</div>
+            <div class="summary-value" style="font-size:18px;">QR Paid</div>
           </div>
         </div>
         <div style="margin-top:14px;">
-          <input id="notes" type="text" placeholder="备注（可留空）" />
+          <input id="notes" type="text" placeholder="Note (Optional)" />
         </div>
         <div style="margin-top:14px;">
-          <button class="primary-btn" onclick="submitOrder()">确认下单</button>
+          <button class="primary-btn" onclick="submitOrder()">Place Order</button>
         </div>
       </div>
     </div>
 
     <div id="kitchenTab" class="tab">
       <div class="card">
-        <span class="section-kicker">出餐区</span>
+        <span class="section-kicker">Kitchen</span>
         <div class="card-title-row">
-          <h2>厨房看单</h2>
-          <button class="small-btn" onclick="loadOrders()">刷新订单</button>
+          <h2>Order List</h2>
+          <button class="small-btn" onclick="loadOrders()">Refresh</button>
         </div>
         <div id="kitchenList" style="margin-top:12px;"></div>
       </div>
@@ -543,16 +543,16 @@
 
     <div id="reportTab" class="tab">
       <div class="card">
-        <span class="section-kicker">今日战绩</span>
+        <span class="section-kicker">Today Income</span>
         <div class="card-title-row">
-          <h2>今日报表</h2>
-          <button class="small-btn" onclick="loadOrders()">刷新报表</button>
+          <h2>Report Today</h2>
+          <button class="small-btn" onclick="loadOrders()">Refresh</button>
         </div>
         <div class="summary-boxes" style="margin-top:12px;">
-          <div class="summary-box"><div class="summary-label">今日总单数</div><div class="summary-value" id="reportOrders">0</div></div>
-          <div class="summary-box"><div class="summary-label">今日总收入</div><div class="summary-value" id="reportRevenue">RM 0.00</div></div>
-          <div class="summary-box"><div class="summary-label">今日已出餐</div><div class="summary-value" id="reportCollected">0</div></div>
-          <div class="summary-box"><div class="summary-label">今日未出餐</div><div class="summary-value" id="reportUncollected">0</div></div>
+          <div class="summary-box"><div class="summary-label">Total Order</div><div class="summary-value" id="reportOrders">0</div></div>
+          <div class="summary-box"><div class="summary-label">Total Income</div><div class="summary-value" id="reportRevenue">RM 0.00</div></div>
+          <div class="summary-box"><div class="summary-label">Total Served</div><div class="summary-value" id="reportCollected">0</div></div>
+          <div class="summary-box"><div class="summary-label">Total Miss</div><div class="summary-value" id="reportUncollected">0</div></div>
           <div class="summary-box"><div class="summary-label">Combo</div><div class="summary-value" id="reportCombo">0</div></div>
           <div class="summary-box"><div class="summary-label">Original</div><div class="summary-value" id="reportOriginal">0</div></div>
           <div class="summary-box"><div class="summary-label">Spicy</div><div class="summary-value" id="reportSpicy">0</div></div>
@@ -625,7 +625,7 @@
       document.getElementById('currentTotal').textContent = formatMoney(getCurrentTotal());
 
       if (!currentOrder.length) {
-        list.innerHTML = '<div class="muted">还没有加任何产品</div>';
+        list.innerHTML = '<div class="muted">No Items</div>';
         return;
       }
 
@@ -645,7 +645,7 @@
 
     async function submitOrder() {
       if (!currentOrder.length) {
-        setStatus('请先加产品', true);
+        setStatus('Add Product', true);
         return;
       }
 
@@ -662,7 +662,7 @@
             orderNumber,
             items: currentOrder,
             total,
-            paymentStatus: 'QR 已付',
+            paymentStatus: 'QR Paid',
             orderStatus: 'Pending',
             notes
           })
@@ -670,16 +670,16 @@
 
         const data = await res.json();
         if (data.success) {
-          setStatus('订单已建立');
+          setStatus('Order Placed');
           currentOrder = [];
           document.getElementById('notes').value = '';
           renderCurrentOrder();
           loadOrders();
         } else {
-          setStatus('下单失败：' + (data.error || '未知错误'), true);
+          setStatus('Failed：' + (data.error || 'unknown'), true);
         }
       } catch (err) {
-        setStatus('提交失败：' + err.message, true);
+        setStatus('Failed：' + err.message, true);
       }
     }
 
@@ -695,7 +695,7 @@
         renderKitchen();
         renderReport();
       } catch (err) {
-        setStatus('读取订单失败', true);
+        setStatus('Failed', true);
       }
     }
 
@@ -705,7 +705,7 @@
     if (!state) return;
 
     const anyStarted =
-      state.chickenSlots.some(s => s.started) ||
+      state.KarageeSlots.some(s => s.started) ||
       state.friesSlots.some(s => s.started);
 
     if (anyStarted) {
@@ -721,7 +721,7 @@
         .reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
     }
 
-    function getChickenCount(order) {
+    function getKarageeCount(order) {
   const items = (orderData.items || [])
     .filter(i => i.orderNumber === order.orderNumber);
 
@@ -730,7 +730,7 @@
   items.forEach(item => {
     const qty = Number(item.quantity) || 0;
     const result = explodeItem(item.itemName, qty);
-    total += result.chicken;
+    total += result.Karagee;
   });
 
   return total;
@@ -767,17 +767,17 @@ function getFriesCount(order) {
 
   if (!order) return;
 
-  const chickenCount = getChickenCount(order);
+  const KarageeCount = getKarageeCount(order);
   const friesCount = getFriesCount(order);
 
         if (!kitchenState[orderNumber]) {
           kitchenState[orderNumber] = {
-            chickenSlots: Array.from({ length: chickenCount }, () => ({ started: false, done: false })),
+            KarageeSlots: Array.from({ length: KarageeCount }, () => ({ started: false, done: false })),
             friesSlots: Array.from({ length: friesCount }, () => ({ started: false, done: false }))
           };
         } else {
           const state = kitchenState[orderNumber];
-          while (state.chickenSlots.length < chickenCount) state.chickenSlots.push({ started: false, done: false });
+          while (state.KarageeSlots.length < KarageeCount) state.KarageeSlots.push({ started: false, done: false });
           while (state.friesSlots.length < friesCount) state.friesSlots.push({ started: false, done: false });
         }
       });
@@ -805,15 +805,15 @@ function getFriesCount(order) {
 
   // ❗加这一句（关键）
   const anyStarted =
-    state.chickenSlots.some(s => s.started) ||
+    state.KarageeSlots.some(s => s.started) ||
     state.friesSlots.some(s => s.started);
 
   if (!anyStarted) return false;
 
-  const allChickenDone = state.chickenSlots.every(slot => slot.done);
+  const allKarageeDone = state.KarageeSlots.every(slot => slot.done);
   const allFriesDone = state.friesSlots.every(slot => slot.done);
 
-  return allChickenDone && allFriesDone;
+  return allKarageeDone && allFriesDone;
 }
 
     function refreshReadyStatuses() {
@@ -832,20 +832,20 @@ function getFriesCount(order) {
       );
 
       if (!activeOrders.length) {
-        kitchenList.innerHTML = '<div class="muted">目前没有订单</div>';
+        kitchenList.innerHTML = '<div class="muted">NO Order</div>';
         return;
       }
 
       kitchenList.innerHTML = activeOrders.map(order => {
-        const state = kitchenState[order.orderNumber] || { chickenSlots: [], friesSlots: [] };
+        const state = kitchenState[order.orderNumber] || { KarageeSlots: [], friesSlots: [] };
 
-        const chickenButtons = state.chickenSlots.map((slot, index) => `
+        const KarageeButtons = state.KarageeSlots.map((slot, index) => `
           <button
             class="small-btn ${slot.started ? 'action-btn-disabled' : ''}"
             ${slot.started ? 'disabled' : ''}
-            onclick="startChickenTimer('${order.orderNumber}', ${index})"
+            onclick="startKarageeTimer('${order.orderNumber}', ${index})"
           >
-            开始炸鸡 #${index + 1}
+            Start Karagee #${index + 1}
           </button>
         `).join('');
 
@@ -855,12 +855,12 @@ function getFriesCount(order) {
             ${slot.started ? 'disabled' : ''}
             onclick="startFriesTimer('${order.orderNumber}', ${index})"
           >
-            开始炸薯条 #${index + 1}
+            Start Fries #${index + 1}
           </button>
         `).join('');
 
         const ready = isOrderReady(order.orderNumber);
-        const chickenCount = getChickenCount(order);
+        const KarageeCount = getKarageeCount(order);
         const friesCount = getFriesCount(order);
 
 return `
@@ -887,10 +887,10 @@ return `
 
     <div class="muted">${order.itemsText}</div>
             <div class="status-badge ${getStatusClass(order.orderStatus)}">${order.orderStatus}</div>
-            <div class="kitchen-meta">鸡排 ${chickenCount} 份 · 薯条 ${friesCount} 份</div>
-            <div class="action-list">${chickenButtons}${friesButtons}</div>
+            <div class="kitchen-meta">Karagee ${KarageeCount} pc · Fries ${friesCount} pc</div>
+            <div class="action-list">${KarageeButtons}${friesButtons}</div>
             <div class="row" style="margin-top:10px;">
-              <button class="primary-btn" style="width:auto;" onclick="markCollected('${order.orderNumber}')" ${!ready ? 'disabled' : ''}>出餐</button>
+              <button class="primary-btn" style="width:auto;" onclick="markCollected('${order.orderNumber}')" ${!ready ? 'disabled' : ''}>Serve</button>
             </div>
             <div id="timers-${order.orderNumber}" class="timer-list"></div>
           </div>
@@ -915,7 +915,7 @@ return `
         }
 
         if (timer.done) {
-          box.textContent = `${timer.label} #${timer.slotIndex + 1} 可以起锅`;
+          box.textContent = `${timer.label} #${timer.slotIndex + 1} Out from Oil`;
         } else {
           box.textContent = formatTimerText(timer.label, timer.slotIndex + 1, timer.remaining);
         }
@@ -925,7 +925,7 @@ return `
     function formatTimerText(label, index, remaining) {
       const min = Math.floor(remaining / 60);
       const sec = remaining % 60;
-      return `${label} #${index} 还剩 ${min}:${String(sec).padStart(2, '0')}`;
+      return `${label} #${index} Left ${min}:${String(sec).padStart(2, '0')}`;
     }
 
     async function startTimer(orderNumber, slotIndex, label, seconds, type) {
@@ -939,7 +939,7 @@ return `
       const state = kitchenState[orderNumber];
       if (!state) return;
 
-      const slots = type === 'chicken' ? state.chickenSlots : state.friesSlots;
+      const slots = type === 'Karagee' ? state.KarageeSlots : state.friesSlots;
       const slot = slots[slotIndex];
       if (!slot || slot.started) return;
 
@@ -1030,12 +1030,12 @@ return `
       }, 1000);
     }
 
-    function startChickenTimer(orderNumber, slotIndex) {
-      startTimer(orderNumber, slotIndex, '鸡排', 120, 'chicken');
+    function startKarageeTimer(orderNumber, slotIndex) {
+      startTimer(orderNumber, slotIndex, 'Karagee', 120, 'Karagee');
     }
 
     function startFriesTimer(orderNumber, slotIndex) {
-      startTimer(orderNumber, slotIndex, '薯条', 240, 'fries');
+      startTimer(orderNumber, slotIndex, 'Fries', 240, 'fries');
     }
 
     async function updateOrderStatus(orderNumber, status, collectedAt = '') {
@@ -1053,13 +1053,13 @@ return `
 
     loadOrders(); // 强制同步
   } catch (err) {
-    setStatus('更新状态失败', true);
+    setStatus('Update Failed', true);
   }
 }
 
     function markCollected(orderNumber) {
       if (!isOrderReady(orderNumber)) {
-        setStatus('这单还没全部完成，不能出餐', true);
+        setStatus('No serve before Ready', true);
         return;
       }
 
@@ -1112,23 +1112,23 @@ return `
   win.document.write('<img src="'+base64+'" style="width:100%">');
 }
     function explodeItem(itemName, qty) {
-  let chicken = 0;
+  let Karagee = 0;
   let fries = 0;
 
   if (itemName === 'Combo') {
-    chicken += qty;
+    Karagee += qty;
     fries += qty;
   }
 
   if (['Original', 'Spicy', 'Seaweed'].includes(itemName)) {
-    chicken += qty;
+    Karagee += qty;
   }
 
   if (itemName === 'Fries') {
     fries += qty;
   }
 
-  return { chicken, fries };
+  return { Karagee, fries };
 }
     
     renderCurrentOrder();
