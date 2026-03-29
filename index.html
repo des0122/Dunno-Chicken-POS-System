@@ -722,46 +722,33 @@
     }
 
     function getChickenCount(order) {
-  const text = order.itemsText || "";
+  const items = (orderData.items || [])
+    .filter(i => i.orderNumber === order.orderNumber);
 
-  let count = 0;
+  let total = 0;
 
-  if (text.includes("Combo")) {
-    const match = text.match(/Combo.*?x(\d+)/);
-    if (match) count += Number(match[1]);
-  }
+  items.forEach(item => {
+    const qty = Number(item.quantity) || 0;
+    const result = explodeItem(item.itemName, qty);
+    total += result.chicken;
+  });
 
-  if (text.includes("Original") || text.includes("Spicy") || text.includes("Seaweed")) {
-    const matches = text.match(/x(\d+)/g);
-    if (matches) {
-      matches.forEach(m => count += Number(m.replace("x","")));
-    }
-  }
-
-  return count;
+  return total;
 }
 
 function getFriesCount(order) {
-  const text = order.itemsText || "";
+  const items = (orderData.items || [])
+    .filter(i => i.orderNumber === order.orderNumber);
 
-  let count = 0;
+  let total = 0;
 
-  if (text.includes("Fries")) {
-    const matches = text.match(/Fries.*?x(\d+)/g);
-    if (matches) {
-      matches.forEach(m => {
-        const num = m.match(/x(\d+)/);
-        if (num) count += Number(num[1]);
-      });
-    }
-  }
+  items.forEach(item => {
+    const qty = Number(item.quantity) || 0;
+    const result = explodeItem(item.itemName, qty);
+    total += result.fries;
+  });
 
-  if (text.includes("Combo")) {
-    const match = text.match(/Combo.*?x(\d+)/);
-    if (match) count += Number(match[1]);
-  }
-
-  return count;
+  return total;
 }
 
     function syncKitchenState() {
@@ -1123,6 +1110,25 @@ return `
     function viewReceipt(base64){
   let win = window.open();
   win.document.write('<img src="'+base64+'" style="width:100%">');
+}
+    function explodeItem(itemName, qty) {
+  let chicken = 0;
+  let fries = 0;
+
+  if (itemName === 'Combo') {
+    chicken += qty;
+    fries += qty;
+  }
+
+  if (['Original', 'Spicy', 'Seaweed'].includes(itemName)) {
+    chicken += qty;
+  }
+
+  if (itemName === 'Fries') {
+    fries += qty;
+  }
+
+  return { chicken, fries };
 }
     
     renderCurrentOrder();
