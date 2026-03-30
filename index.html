@@ -457,6 +457,42 @@
       .summary-value { font-size: 22px; }
       .tab-btn { width: 100%; }
     }
+
+    .modal{
+  position:fixed;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  background:rgba(0,0,0,0.4);
+  display:none;
+  justify-content:flex-end;
+  z-index:999;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-content{
+  background:white;
+  width:100%;
+  padding:20px;
+  padding-bottom:100px;
+
+  border-radius:20px 20px 0 0;
+
+  max-height:90vh;
+  overflow-y:auto;
+}
+
+.flavour-card{
+  padding:14px;
+  border-radius:14px;
+  background:#f9f9f9;
+  margin-bottom:10px;
+}
+
   </style>
 </head>
 <body>
@@ -493,7 +529,7 @@
           <h2>Select Items</h2>
         </div>
         <div class="grid">
-          <button class="product-btn" onclick="addItem('Combo', 11)">🍗🍟 Combo<span>RM 11.00</span></button>
+          <button class="product-btn" onclick="openComboPOS()">🍗🍟 Combo<span>RM 11.00</span></button>
           <button class="product-btn" onclick="addItem('Original', 7.5)">🍗 Original<span>RM 7.50</span></button>
           <button class="product-btn" onclick="addItem('Spicy', 8)">🌶️ Spicy<span>RM 8.00</span></button>
           <button class="product-btn" onclick="addItem('Seaweed', 8)">🍃 Seaweed<span>RM 8.00</span></button>
@@ -525,7 +561,7 @@
           <input id="notes" type="text" placeholder="Note (Optional)" />
         </div>
         <div style="margin-top:14px;">
-          <button class="primary-btn" onclick="submitOrder()">Place Order</button>
+          <button id="submitBtn" class="primary-btn" onclick="submitOrder()">Place Order</button>
         </div>
       </div>
     </div>
@@ -561,6 +597,41 @@
         </div>
       </div>
     </div>
+
+    <div class="modal" id="comboModalPOS">
+  <div class="modal-content">
+
+    <div style="width:40px;height:5px;background:#ccc;border-radius:10px;margin:0 auto 16px;"></div>
+
+    <h2 style="margin-bottom:12px;">🍗 Choose your flavour</h2>
+
+    <div class="flavour-card" onclick="selectComboPOS('Original')">
+      <div style="font-weight:bold;">Original 🍗</div>
+      <div style="font-size:13px;color:#666;">Classic taste</div>
+    </div>
+
+    <div class="flavour-card" onclick="selectComboPOS('Spicy')">
+      <div style="font-weight:bold;">Spicy 🌶️</div>
+      <div style="font-size:13px;color:#666;">Malaysia boleh 🔥</div>
+    </div>
+
+    <div class="flavour-card" onclick="selectComboPOS('Seaweed')">
+      <div style="font-weight:bold;">Seaweed 🍃</div>
+      <div style="font-size:13px;color:#666;">Japan flavour 🇯🇵</div>
+    </div>
+
+    <button onclick="closeComboPOS()" style="
+      width:100%;
+      margin-top:10px;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      background:#eee;
+    ">Cancel</button>
+
+  </div>
+</div>
+
   </div>
 
   <script>
@@ -574,6 +645,36 @@
     let orderData = { orders: [], items: [] };
     let activeTimers = {};
     let kitchenState = {};
+
+    function explodeItem(name, qty){
+
+  let result = {
+    Karagee: 0,
+    fries: 0
+  };
+
+  // Combo
+  if(name.includes("Combo")){
+    result.Karagee += 1 * qty;
+    result.fries += 1 * qty;
+  }
+
+  // Chicken
+  else if(
+    name.includes("Original") ||
+    name.includes("Spicy") ||
+    name.includes("Seaweed")
+  ){
+    result.Karagee += 1 * qty;
+  }
+
+  // Fries
+  else if(name.includes("Fries")){
+    result.fries += 1 * qty;
+  }
+
+  return result;
+}
 
     function showTab(tabId, btn) {
       document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -644,44 +745,52 @@
     }
 
     async function submitOrder() {
-      if (!currentOrder.length) {
-        setStatus('Add Product', true);
-        return;
-      }
+  if (!currentOrder.length) return;
 
-      const orderNumber = generateOrderNumber();
-      const total = getCurrentTotal();
-      const notes = document.getElementById('notes').value.trim();
+  const btn = document.getElementById("submitBtn");
 
-      try {
-        const res = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({
-            action: 'createOrder',
-            orderNumber,
-            items: currentOrder,
-            total,
-            paymentStatus: 'QR Paid',
-            orderStatus: 'Pending',
-            notes
-          })
-        });
+  btn.disabled = true;
+  btn.innerHTML = 'Processing...';
 
-        const data = await res.json();
-        if (data.success) {
-          setStatus('Order Placed');
-          currentOrder = [];
-          document.getElementById('notes').value = '';
-          renderCurrentOrder();
-          loadOrders();
-        } else {
-          setStatus('Failed：' + (data.error || 'unknown'), true);
-        }
-      } catch (err) {
-        setStatus('Failed：' + err.message, true);
-      }
-    }
+  const orderNumber = generateOrderNumber();
+  const total = getCurrentTotal();
+  const notes = document.getElementById('notes').value.trim();
+
+  const itemsToSend = [...currentOrder]; // ⭐关键
+
+  currentOrder = [];
+  document.getElementById('notes').value = '';
+  renderCurrentOrder();
+
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      action: 'createOrder',
+      orderNumber,
+      items: itemsToSend,
+      total,
+      paymentStatus: 'QR Paid',
+      orderStatus: 'Pending',
+      notes
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    btn.innerHTML = '✔ Done';
+    loadOrders();
+    console.log("ORDER SENT:", data);
+
+    setTimeout(()=>{
+      btn.disabled = false;
+      btn.innerHTML = 'Place Order';
+    },1000);
+  })
+  .catch(err => {
+    btn.disabled = false;
+    btn.innerHTML = 'Try Again';
+  });
+}
 
     async function loadOrders() {
 
@@ -721,30 +830,28 @@
         .reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
     }
 
-    function getKarageeCount(order) {
-  const items = (orderData.items || [])
-    .filter(i => i.orderNumber === order.orderNumber);
+    function getKarageeCount(order){
+
+  const items = parseItemsText(order.itemsText);
 
   let total = 0;
 
-  items.forEach(item => {
-    const qty = Number(item.quantity) || 0;
-    const result = explodeItem(item.itemName, qty);
+  items.forEach(item=>{
+    const result = explodeItem(item.name, item.qty);
     total += result.Karagee;
   });
 
   return total;
 }
 
-function getFriesCount(order) {
-  const items = (orderData.items || [])
-    .filter(i => i.orderNumber === order.orderNumber);
+function getFriesCount(order){
+
+  const items = parseItemsText(order.itemsText);
 
   let total = 0;
 
-  items.forEach(item => {
-    const qty = Number(item.quantity) || 0;
-    const result = explodeItem(item.itemName, qty);
+  items.forEach(item=>{
+    const result = explodeItem(item.name, item.qty);
     total += result.fries;
   });
 
@@ -1111,24 +1218,17 @@ return `
   let win = window.open();
   win.document.write('<img src="'+base64+'" style="width:100%">');
 }
-    function explodeItem(itemName, qty) {
-  let Karagee = 0;
-  let fries = 0;
 
-  if (itemName === 'Combo') {
-    Karagee += qty;
-    fries += qty;
-  }
+function parseItemsText(text){
+  if(!text) return [];
 
-  if (['Original', 'Spicy', 'Seaweed'].includes(itemName)) {
-    Karagee += qty;
-  }
-
-  if (itemName === 'Fries') {
-    fries += qty;
-  }
-
-  return { Karagee, fries };
+  return text.split(",").map(part => {
+    let [name, qty] = part.trim().split(" x");
+    return {
+      name: name.trim(),
+      qty: Number(qty) || 1
+    };
+  });
 }
 
 function explodeItem(name, qty){
@@ -1154,6 +1254,19 @@ function explodeItem(name, qty){
   }
 
   return result;
+}
+
+function openComboPOS(){
+  document.getElementById("comboModalPOS").classList.add("show");
+}
+
+function closeComboPOS(){
+  document.getElementById("comboModalPOS").classList.remove("show");
+}
+
+function selectComboPOS(flavour){
+  addItem("Combo (" + flavour + ")", 11);
+  closeComboPOS();
 }
     
     renderCurrentOrder();
