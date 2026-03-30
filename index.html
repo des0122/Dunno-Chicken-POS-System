@@ -1130,6 +1130,31 @@ return `
 
   return { Karagee, fries };
 }
+
+function explodeItem(name, qty){
+
+  let result = {
+    Karagee: 0,
+    fries: 0
+  };
+
+  // 🔥 Combo
+  if(name.includes("Combo")){
+    result.Karagee += 1 * qty;
+    result.fries += 1 * qty;
+  }
+
+  // 🔥 单点
+  else if(name.includes("Original") || name.includes("Spicy") || name.includes("Seaweed")){
+    result.Karagee += 1 * qty;
+  }
+
+  else if(name.includes("Fries")){
+    result.fries += 1 * qty;
+  }
+
+  return result;
+}
     
     renderCurrentOrder();
     loadOrders();
